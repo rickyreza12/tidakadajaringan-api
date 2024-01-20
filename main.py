@@ -1,18 +1,20 @@
 from flask import Flask, request, jsonify
 from selenium import webdriver
-from selenium.webdriver.chrome.options import Options
+from selenium.webdriver.chrome.options import Options as ChromeOptions
 from selenium.common.exceptions import NoSuchElementException
-from selenium.webdriver.common.by import By
-from selenium.webdriver.support.ui import WebDriverWait
-from selenium.webdriver.support import expected_conditions as EC
-import traceback
+import os  # Add this import
 
 app = Flask(__name__)
 
-chrome_options = Options()
+# Set the path to the locally uploaded chromedriver
+chromedriver_path = os.path.join(os.getcwd(), "bin", "chromedriver")
+
+chrome_options = ChromeOptions()
 chrome_options.add_argument("--headless")
-chrome_options.add_argument("--disable-gpu")
-driver = webdriver.Chrome(options=chrome_options)
+chrome_options.add_argument(f"--disable-gpu")
+chrome_options.add_argument(f"--remote-debugging-port=9222")  # Optional, for debugging
+
+driver = webdriver.Chrome(options=chrome_options, executable_path=chromedriver_path)
 
 @app.route('/')
 def hello():
