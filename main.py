@@ -1,20 +1,42 @@
 from flask import Flask, request, jsonify
 from selenium import webdriver
-from selenium.webdriver.chrome.options import Options as ChromeOptions
+from selenium.webdriver.firefox.options import Options as FirefoxOptions
+from selenium.webdriver.firefox.service import Service
+from selenium.webdriver.firefox.firefox_profile import FirefoxProfile
 from selenium.common.exceptions import NoSuchElementException
-import os  # Add this import
+import os
 
 app = Flask(__name__)
 
-# Set the path to the locally uploaded chromedriver
-chromedriver_path = os.path.join(os.getcwd(), "bin", "chromedriver")
+platform = "windows" if os.name == "nt" else "linux"
 
-chrome_options = ChromeOptions()
-chrome_options.add_argument("--headless")
-chrome_options.add_argument(f"--disable-gpu")
-chrome_options.add_argument(f"--remote-debugging-port=9222")  # Optional, for debugging
+# Set the path to the locally uploaded geckodriver
+geckodriver_path = os.path.join(os.getcwd(), "bin\\", platform + "\\geckodriver")
 
-driver = webdriver.Chrome(options=chrome_options, executable_path=chromedriver_path)
+if platform == "windows":
+    service = Service(executable_path=geckodriver_path + ".exe")
+else:
+    service = Service(executable_path=geckodriver_path)
+
+firefox_options = FirefoxOptions()
+firefox_options.headless = True
+
+# firefox_binary_path = 'C:\\Program Files\\Mozilla Firefox\\firefox.exe'
+# firefox_options.binary_location = firefox_binary_path
+
+firefox_profile = FirefoxProfile()
+firefox_profile.add_argument("-profile")
+firefox_profile.add_argument("{firefox_profile_path}")
+
+capabilities = {
+    "browserName": "firefox",
+    "moz:firefoxOptions": {
+        "args": ["-headless"],
+    },
+}
+
+driver = webdriver.Firefox(options=firefox_options, service=service, capabilities=capabilities)
+
 
 @app.route('/')
 def hello():
