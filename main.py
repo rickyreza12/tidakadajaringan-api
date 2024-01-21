@@ -1,6 +1,7 @@
 from flask import Flask, request, jsonify
 from selenium import webdriver
 from selenium.webdriver.chrome.options import Options as ChromeOptions
+from selenium.webdriver.chrome.service import Service
 from selenium.common.exceptions import NoSuchElementException
 import os  # Add this import
 
@@ -12,7 +13,9 @@ chrome_options.add_argument("--disable-gpu")
 chrome_options.add_argument("--no-sandbox")
 
 chrome_options.binary_location = os.environ.get("GOOGLE_CHROME_BIN")
-driver = webdriver.Chrome(executable_path=os.environ.get("CHROMEDRIVER_PATH"), options=chrome_options)
+
+service = Service(executable_path=os.environ.get("CHROMEDRIVER_PATH"))
+driver = webdriver.Chrome(service=service, options=chrome_options)
 
 @app.route('/')
 def hello():
