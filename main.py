@@ -6,20 +6,10 @@ import os  # Add this import
 
 app = Flask(__name__)
 
-platform = "windows" if os.name == "nt" else "linux"
-
 chrome_options = ChromeOptions()
 chrome_options.add_argument("--headless")
 chrome_options.add_argument("--disable-gpu")
-
-if platform == "windows":
-    driver = webdriver.Chrome(options=chrome_options)
-else:
-    chromedriver_path = os.path.join(os.getcwd(), "bin", "chromedriver")
-    chrome_options.add_argument(f"--remote-debugging-port=9222")  
-    
-    service = webdriver.ChromeService(executable_path=chromedriver_path)
-    driver = webdriver.Chrome(service=service, options=chrome_options)
+driver = webdriver.Chrome(options=chrome_options)
 
 @app.route('/')
 def hello():
